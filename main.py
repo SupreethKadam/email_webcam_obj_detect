@@ -1,6 +1,8 @@
 import cv2
 import glob
+import os
 from emailing import send_email
+from threading import Thread
 
 # Capturing the video using web-camera.
 # Pass the argument 0 if using main camera(integrated camera) or 1 - for external or USB camera.
@@ -9,6 +11,15 @@ video = cv2.VideoCapture(0)
 first_frame = None
 status_list = []
 count = 1
+
+
+def clean_folder():
+    print("clean_folder function started.")
+    images = glob.glob("images/*.png")
+    for image in images:
+        os.remove(image)
+    print("clean_folder function ended.")
+
 
 while True:
     status = 0
@@ -51,13 +62,18 @@ while True:
     status_list = status_list[-2:]
 
     if status_list[0] == 1 and status_list[1] == 0:
-        send_email(img_with_obj)
+        email_thread = Thread(target=send_email, args=(img_with_obj, ))
+        email_thread.daemon = True
+        email_thread.start()
 
     print(status_list)
 
     cv2.imshow("My video", frame)
     key = cv2.waitKey(1)
     if key == ord("q"):
+        clean_thread = Thread(target=clean_folder)
+        clean_thread.daemon = True
+        clean_thread.start()
         break
 
 video.release()
