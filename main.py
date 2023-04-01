@@ -8,7 +8,7 @@ video = cv2.VideoCapture(0)
 
 first_frame = None
 status_list = []
-count = 0
+count = 1
 
 while True:
     status = 0
@@ -46,17 +46,14 @@ while True:
             all_images = glob.glob("images/*.png")
             index = int(len(all_images) / 2)
             img_with_obj = all_images[index]
-            print("index: ", index)
-
 
     status_list.append(status)
     status_list = status_list[-2:]
 
     if status_list[0] == 1 and status_list[1] == 0:
-        send_email()
+        send_email(img_with_obj)
 
     print(status_list)
-
 
     cv2.imshow("My video", frame)
     key = cv2.waitKey(1)
