@@ -1,7 +1,8 @@
 import cv2
 import glob
-import os
 from emailing import send_email
+from clean_folder import clean_folder
+from time_stamp import time_stamp
 from threading import Thread
 
 # Capturing the video using web-camera.
@@ -11,14 +12,6 @@ video = cv2.VideoCapture(0)
 first_frame = None
 status_list = []
 count = 1
-
-
-def clean_folder():
-    print("clean_folder function started.")
-    images = glob.glob("images/*.png")
-    for image in images:
-        os.remove(image)
-    print("clean_folder function ended.")
 
 
 while True:
@@ -51,8 +44,9 @@ while True:
         rectangle = cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 3)
         if rectangle.any():
             status = 1
+            captured_img = time_stamp(frame)
             # capturing the image frame
-            cv2.imwrite(f"images/{count}.png", frame)
+            cv2.imwrite(f"images/{count}.png", captured_img)
             count += 1
             all_images = glob.glob("images/*.png")
             index = int(len(all_images) / 2)
